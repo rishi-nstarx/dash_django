@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block tittle %}Attendence Page{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+
+    <!-- Student -->
+    <label for="student">Student:</label>
+    <select id="student" name="student" required>
+        {% for student_info in students_info %}
+            <option value="{{ student_info.student.id }}">{{ student_info.student.first_name }} {{ student_info.student.last_name }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <!-- Year -->
+    <label for="year">Year:</label>
+    <input type="number" id="year" name="year" min="2015" max="2030" required><br><br>
+
+    <!-- Month -->
+    <label for="month">Month:</label>
+    <select id="month" name="month" required>
+        <option value="" disabled selected>Select Month</option>
+        <option value="JAN">January</option>
+        <option value="FEB">February</option>
+        <option value="MAR">March</option>
+        <option value="APR">April</option>
+        <option value="MAY">May</option>
+        <option value="JUN">June</option>
+        <option value="JUL">July</option>
+        <option value="AUG">August</option>
+        <option value="SEP">September</option>
+        <option value="OCT">October</option>
+        <option value="NOV">November</option>
+        <option value="DEC">December</option>
+    </select><br><br>
+
+    <!-- Days in Month -->
+    <label for="days_in_month">Days in Month:</label>
+    <input type="number" id="days_in_month" name="days_in_month" min="0" max="31" required><br><br>
+
+    <!-- Submit Button -->
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}

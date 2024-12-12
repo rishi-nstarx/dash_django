@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Admissions Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+
+    <h1>Admissions Data Visualization</h1>
+    {% load plotly_dash %}
+    <iframe src="/django_plotly_dash/app/AdmissionsApp" width="100%" height="600px" frameborder="0"></iframe>
+    
+    <!-- {% plotly_app name="AdmissionsApp" %} -->
+</div>
+{% endblock %}
+
+
+
+
+
+<!-- {% comment %} <iframe src="/django_plotly_dash/app/AdmissionsApp" width="100%" height="600px" frameborder="0"></iframe> {% endcomment %} -->
+

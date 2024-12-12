@@ -1,0 +1,38 @@
+"""
+URL configuration for auth_project project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.0/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+# # myproject/urls.py
+# from django.contrib import admin
+# from django.urls import path, include
+
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#     path('auth/', include('auth_app.urls')),
+# ]
+
+from django.contrib import admin
+from django.urls import path, include
+from django.shortcuts import render
+from . import views
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('auth/', include('auth_app.urls')),
+    path('dash/', include('dash_app.urls')),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),  # Note: django_plotly_dash not a name of your app, it's referring to the inner namespace of this library.
+    path('', views.home, name='home'),
+]

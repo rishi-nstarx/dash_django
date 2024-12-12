@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block tittle %}Student Creation{% endblock %}
+
+{% block content %}
+<h1>Student Creation Form</h1>
+<form action="" method="post">
+    {% csrf_token %}
+
+    <label for="dob">Date of Birth:</label>
+    <input type="date" id="dob" name="dob" value="{{user.dob}}" required><br><br>
+
+    <label for="admission_date">Admission Date:</label>
+    <input type="date" id="admission_date" name="admission_date" value="{{user.admission_date}}" required><br><br>
+
+    <label for="branch">Branch:</label>
+    <select id="branch" name="branch" required>
+        <option value="" disabled {% if not user.branch %}selected{% endif %}>Select Branch</option>
+        <option value="CSE" {% if user.branch == "CSE" %}selected{% endif %}>Computer Science Engineering</option>
+        <option value="EE" {% if user.branch == "EE" %}selected{% endif %}>Electrical Engineering</option>
+        <option value="MECH" {% if user.branch == "MECH" %}selected{% endif %}>Mechanical Engineering</option>
+        <option value="CIVIL" {% if user.branch == "CIVIL" %}selected{% endif %}>Civil Engineering</option>
+    </select><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}
+

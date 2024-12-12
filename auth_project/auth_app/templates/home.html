@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block tittle %}Home Page{% endblock %}
+
+{% block content %}
+<h2>Home Page</h2>
+<h3>This is customized home page.</h3>
+
+<a href="{% url "dash_home" %}">Go to Dash Page</a><br>
+<a href="{% url "student_profile" %}">Go to Student Creation Page</a><br>
+
+{% if user.role == "ADMIN" %}
+<a href="{% url 'register'%}">Register New User</a><br>
+<a href="{% url 'attendence_update'%}">Update Attendence</a>
+{% endif %}
+
+{% if user.role == "STUDENT" %}
+<a href="{% url 'attendence_graph'%}">View Attendence Report</a>
+{% endif %}
+
+{% comment %} <form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button class="btn btn-primary">login</button>
+</form>
+<p>Don't have an account? <a href="{% url 'register' %}">Register Here</a></p> {% endcomment %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}Admissions Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+
+    <h1>Attendence Data Visualization</h1>
+    {% load plotly_dash %}
+    {% plotly_app name="AttendenceReport" initial_arguments=dash_context ratio="1"%}
+    <!-- <iframe src="/django_plotly_dash/app/AttendenceReport" width="100%" height="600px" frameborder="0"></iframe> -->
+    
+</div>
+{% endblock %}
+

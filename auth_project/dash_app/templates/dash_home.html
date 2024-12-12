@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block tittle %}Dash Home Page{% endblock %}
+
+{% block content %}
+<h2>Dash Home Page</h2>
+<h3>This is customized home page for Dash utililities.</h3>
+
+<p>Fill the data in the following fields of the students admissions as per the year.</p>
+
+<div id="student-data-form">
+    <form action="" method="post" >
+        {% csrf_token %}
+        <label for="year">Year</label>
+        <input type="number" name="year" id="year" min="1900" max="2024" required><br><br>
+    
+        <label for="mech">Mech</label>
+        <input type="number" name="mech" id="mech" required><br><br>
+    
+        <label for="civil">Civil</label>
+        <input type="number" name="civil" id="civil" required><br><br>
+    
+        <label for="ee">EE</label>
+        <input type="number" name="ee" id="ee" required><br><br>
+    
+        <label for="cse">CSE</label>
+        <input type="number" name="cse" id="cse" required><br><br>
+    
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url "dash_home_graph" %}">View Graph</a>
+</div>
+
+
+{% comment %} <form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button class="btn btn-primary">login</button>
+</form>
+<p>Don't have an account? <a href="{% url 'register' %}">Register Here</a></p> {% endcomment %}
+{% endblock %}
