@@ -100,7 +100,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'Dash_Integration',
         'USER': 'root',
-        'PASSWORD': 'rsoni',
+        'PASSWORD': 'Mysql@24',
         'HOST': 'localhost',   # Or the IP address where MySQL is hosted
         'PORT': '3306',        # MySQL port (default is 3306)
     }

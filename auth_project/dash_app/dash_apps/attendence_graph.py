@@ -1,10 +1,11 @@
 from django_plotly_dash import DjangoDash
-from dash import html,dcc, callback_context
+from dash import html,dcc, callback_context, _dash_renderer
 from dash.dependencies import Input, Output
 import plotly.express as px
 from django_plotly_dash.util import store_initial_arguments, get_initial_arguments
 
 from django.core.cache import cache
+
 
 # from dash_app.utils import get_current_cache_id
 
@@ -69,7 +70,7 @@ def update_graph(selected_options):
 
         def fetch_data():
             from ..models import AttendenceData # Relative import prevents from error.
-            attendence_data = AttendenceData.objects.filter(student_id=5)
+            attendence_data = AttendenceData.objects.filter(student_id=2)
             return attendence_data
         
         # Month ordering
