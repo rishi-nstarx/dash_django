@@ -13,8 +13,6 @@ from ..models import StudentData
 all_students = StudentData.objects.all().order_by("year")
 
 
-
-
 all_data = [
     {
         "Year": student.year,
@@ -122,82 +120,133 @@ all_data = [
 
 
 
-# Components with DMC.
-app.layout = dmc.MantineProvider(
-    withGlobalClasses=True,
-    children=html.Div(
-        children=[
-            dmc.Card(
-                children=[
-                    dmc.Title("Admissions Data Over Years", ta="center", order=1),
-                    dmc.Text("Select Year:", size="sm", fw=500),
-                    dmc.Select(
-                        id="year-dropdown",
-                        data=[{"label": student.year, "value": student.year} for student in all_students],
-                        placeholder="Select a year",
-                        searchable=True,
-                        clearable=True
-                    ),
-                    dmc.Table([
-                        dmc.TableThead(
-                            dmc.TableTr(
-                                [
-                                    dmc.TableTh("Year"),
-                                    dmc.TableTh("Mech"),
-                                    dmc.TableTh("Civil"),
-                                    dmc.TableTh("EE"),
-                                    dmc.TableTh("CSE"),
-                                ]
+# Layout of the app
+app.layout = html.Div(
+    dmc.MantineProvider(
+        withGlobalClasses=True,
+        children=html.Div(
+            children=[
+                # Main Card
+                dmc.Card(
+                    children=[
+                        # Title and Select Dropdown for Year
+                        dmc.Title("Admissions Data Over Years", ta="center", order=1),
+                        dmc.Text("Select Year:", size="sm", fw=500),
+                        dmc.Select(
+                            id="year-dropdown",
+                            data=[{"label": student.year, "value": student.year} for student in all_students],
+                            placeholder="Select a year",
+                            searchable=True,
+                            clearable=True
+                        ),
+
+                        dmc.Space(h=10),
+
+                        # Table for displaying admission data
+                        dmc.Table(
+                            id="admissions-table",
+                            striped=True,
+                            highlightOnHover=True,
+                            withTableBorder=True,
+                            withColumnBorders=True,
+                        ),
+                        dmc.TableCaption("Students admission data as per the year"),
+
+                        dmc.Space(h=10),
+
+                        # Pagination control for table
+                        dmc.Pagination(
+                            id="table-pagination",
+                            total=(len(all_data) + 2) // 3,  # Total pages (3 rows per page)
+                            siblings=1,
+                            boundaries=1,
+                            value=1,  # Set the initial page to 1
+                            style={"display": "flex", "justifyContent": "center", "textDecoration": "none"}
+                        ),
+
+                        # Link for further explanation
+                        html.A(
+                            dmc.Button(
+                                "Click here for more explanation",
+                                variant="gradient",
+                                gradient={"from": "teal", "to": "lime", "deg": 105},
                             ),
+                            href="http://127.0.0.1:8000/dash/graph_explained/",
+                            target="_blank",  # Opens the link in a new tab,
+                            style={"display": "flex", "justifyContent": "flex-end", "textDecoration": "none"}
                         ),
-                        dmc.TableTbody(
-                            [
-                                dmc.TableTr(
-                                    [
-                                        dmc.TableTd(data["Year"]),
-                                        dmc.TableTd(data["Mech"]),
-                                        dmc.TableTd(data["Civil"]),
-                                        dmc.TableTd(data["EE"]),
-                                        dmc.TableTd(data["CSE"]),
-                                    ]
-                                ) for data in all_data
-                            ]
-                        ),
-                        dmc.TableCaption("Students admission data as per the year")
+
+                        dmc.Space(h=20),
+
+                        # Card containing the graph
+                        dmc.Card(
+                            dcc.Graph(id="admissions-graph"),
+                            withBorder=True,
+                            shadow="sm",
+                            padding="lg"
+                        )
                     ],
-                        striped=True,
-                        highlightOnHover=True,
-                        withTableBorder=True,
-                        withColumnBorders=True,
-                    ),
-                    dmc.Anchor(
-                        "Click here for more explanation",
-                        href="http://127.0.0.1:8000/dash/graph_explained/",
-                        underline=True,
-                        target="_blank",
-                        c="blue"
-                    ),
-                    dmc.Card(
-                        dcc.Graph(id="admissions-graph"),
-                        withBorder=True,
-                        shadow="sm",
-                        padding="lg"
-                    )
-                ],
-                withBorder=True,
-                shadow="lg",
-                padding="xl"
-            )
-        ]
+                    withBorder=True,
+                    shadow="lg",
+                    padding="xl"
+                )
+            ]
+        )
     )
 )
-# Callback remains the same
+
+# Callback to update the table rows based on the selected page in pagination
+@app.callback(
+    Output("admissions-table", "children"),
+    [Input("table-pagination", "value")]
+)
+def update_table(page_number):
+    # Set how many rows to show per page
+    rows_per_page = 3
+    start = (page_number - 1) * rows_per_page
+    end = start + rows_per_page
+
+    # Slice data to show only the rows for the current page
+    current_page_data = all_data[start:end]
+
+    # Table header
+    table_header = dmc.TableThead(
+        dmc.TableTr(
+            [
+                dmc.TableTh("Year"),
+                dmc.TableTh("Mech"),
+                dmc.TableTh("Civil"),
+                dmc.TableTh("EE"),
+                dmc.TableTh("CSE"),
+            ]
+        )
+    )
+    
+    # Table body with rows for the current page
+    table_body = dmc.TableTbody(
+        [
+            dmc.TableTr(
+                [
+                    dmc.TableTd(data["Year"]),
+                    dmc.TableTd(data["Mech"]),
+                    dmc.TableTd(data["Civil"]),
+                    dmc.TableTd(data["EE"]),
+                    dmc.TableTd(data["CSE"]),
+                ]
+            ) for data in current_page_data
+        ]
+    )
+
+    return [table_header, table_body]
+
+# Callback to update the admissions graph based on the selected year from the dropdown
 @app.callback(
     Output("admissions-graph", "figure"),
     [Input("year-dropdown", "value")]
 )
 def update_graph(selected_year):
     if selected_year:
+        # Filter the student data for the selected year
         student = StudentData.objects.filter(year=selected_year).first()
         if student:
             branches = ["Mech", "Civil", "EE", "CSE"]
@@ -211,7 +260,7 @@ def update_graph(selected_year):
             )
             return fig
 
-    # Default graph
+    # Default graph (if no year is selected)
     data = {
         "Year": [],
         "Branch": [],
@@ -232,7 +281,6 @@ def update_graph(selected_year):
         title="Admissions Over Years"
     )
     return fig
-
 
 
 

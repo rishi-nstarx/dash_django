@@ -3,10 +3,11 @@ from django.views import View
 from .models import StudentData, StudentInfo
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from asgiref.sync import sync_to_async
 
 from auth_app.models import CustomUser
 from .models import StudentInfo, AttendenceData
-
+from .dash_apps.attendence_graph import fetch_data
 
 # Create your views here.
 class DashView(View):
@@ -41,9 +42,6 @@ class StudentProfile(View):
             student_info = StudentInfo.objects.get(student=request.user)
         except StudentInfo.DoesNotExist:
             student_info = None
-        # print(student_info.dob if student_info else None, 
-        #       student_info.admission_date if student_info else None, 
-        #       student_info.branch if student_info else None)
 
         return render(request, 'student_creation.html', {'user': student_info})
 
@@ -126,82 +124,13 @@ def graph_explained(request):
 
 @login_required(login_url='login')
 def attendence_graph(request):
-    initial_arguments = {
-        'user_id': request.user.id
-    }
-    return render(request, 'attendence_graph.html', {'dash_context': initial_arguments})
+    fetch_data(request.user.id)
+    return render(request, 'attendence_graph.html')
 
-
-def fetch_user_data(args):
-    from dash_app.utils import get_current_user
-    user = get_current_user(args)  # Lazy import avoids initialization conflict
-    return user
-
-
-# @login_required(login_url='login')
-# def try_function(request):
-#     user = fetch_user_data(request)
-
-#     # Month ordering
-#     MONTH_ORDER = {
-#         'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6, 'JUL': 7,
-#         'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12
-#     }
-
-#     # Query attendance data for the user
-#     attendence_data = AttendenceData.objects.filter(student_id=5)
-
-#     sorted_attendence_data = sorted(attendence_data, key=lambda record: MONTH_ORDER[record.month])
-
-
-
-#     print(sorted_attendence_data)
-
-#     line_data = {
-#         "Months": [],
-#         "Days": []
-#     }
-
-#     for attendenec in sorted_attendence_data:
-#         line_data["Months"].append(attendenec.month)
-#         line_data["Days"].append(attendenec.days_in_month)
-
-#     month_labels = {
-#         'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
-#         'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
-#         'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
-#     }
-
-#     full_month_names = [month_labels[month] for month in line_data["Months"]]
-
-#     x=line_data["Days"]
-#     y=line_data["Months"]
-
-#     print(x)
-#     print(y)
-#     print(full_month_names)
-
-
-
-    # # Sort data by month
-    # sorted_attendence_data = sorted(
-    #     attendence_data,
-    #     key=lambda record: MONTH_ORDER[record.month]
-    # )
-
-
-    # # Prepare data for graphs
-    # months = [data.month for data in sorted_attendence_data]
-    # days = [data.days_in_month for data in sorted_attendence_data]
-
-    # # Map month codes to full names for better display
-    # month_labels = {
-    #     'JAN': 'January', 'FEB': 'February', 'MAR': 'March', 'APR': 'April',
-    #     'MAY': 'May', 'JUN': 'June', 'JUL': 'July', 'AUG': 'August',
-    #     'SEP': 'September', 'OCT': 'October', 'NOV': 'November', 'DEC': 'December'
-    # }
-    # full_month_names = [month_labels[month] for month in months]
-
-    # print(months)
-    # print(days)
-    # print(full_month_names)
+@sync_to_async
+@login_required(login_url='login')
+def live_graph(request):
+    from .dash_apps.live_users import wait, thread_status
+    if not thread_status:
+        wait()
+    return render(request, 'live_app.html')

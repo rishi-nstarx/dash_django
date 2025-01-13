@@ -1,102 +1,251 @@
-<!-- DCC code -->
+# All types of graphs which are feasible using dash-polotly.
 
-# from django_plotly_dash import DjangoDash
-# from dash import Input, Output, dcc, html
-# import dash_mantine_components as dmc
-# import plotly.express as px
-# from .models import StudentData
 
-# # Define the Dash app
-# app = DjangoDash("AdmissionsApp")
+import dash
+from dash import html, dcc,_dash_renderer
+import dash_mantine_components as dmc
+import plotly.express as px
+import pandas as pd
 
-# # Layout with multiple charts
-# app.layout = dmc.MantineProvider([
-#     dmc.Center(
-#         # dmc.Title("Admissions Data Dashboard", align="center", order=1)
-#         # dmc.Title("Admissions Data Dashboard", ta="center", order=1),
-#         dmc.Title("Admissions Data Dashboard", style={"textAlign": "center"}, order=1),
+_dash_renderer._set_react_version("18.2.0")
 
-#     ),
-#     dmc.Space(h=20),
+# Sample data for demonstration
+df = px.data.iris()
+df_bar = px.data.tips()
+df_geo = px.data.gapminder()
+df_funnel = pd.DataFrame({
+    "stage": ["Awareness", "Interest", "Decision", "Action"],
+    "count": [300, 200, 150, 100]
+})
 
-#     # Dropdown foselecting the year
-#     dmc.Select(
-#         label="Select Year",
-#         id="year-select",
-#         placeholder="Choose a year",
-#         data=[
-#             {"label": student.year, "value": student.year}
-#             for student in StudentData.objects.all()
-#         ],
-#         clearable=True
-#     ),
-#     dmc.Space(h=20),
+# Initialize the Dash app
+app = dash.Dash(__name__)
 
-#     # Graph containers
-#     # dmc.Grid([
-#     #     dmc.Col(dcc.Graph(id="bar-chart"), span=4),
-#     #     dmc.Col(dcc.Graph(id="line-graph"), span=4),
-#     #     dmc.Col(dcc.Graphr (id="pie-chart"), span=4),
-#     # ])
+# Define the app layout
+app.layout = dmc.MantineProvider(
+    children=dmc.Container([
+        dmc.Title("Plotly Figure Examples", order=1),
+        dmc.Space(h=20),
 
-#     # dmc.Grid([ne-gr
-#     #     dmc.Grid.Col(dcc.Graph(id="bar-chart"), span=4),
-#     #     dmc.Grid.Col(dcc.Graph(id="line-graph"), span=4),
-#     #     dmc.Grid.Col(dcc.Graph(id="pie-chart"), span=4),
-#     # ])
+        dcc.Graph(
+            id="scatter-plot",
+            figure=px.scatter(
+                df, x="sepal_width", y="sepal_length", color="species",
+                title="Scatter Plot: Sepal Width vs Sepal Length"
+            )
+        ),
 
-#     dmc.SimpleGrid(
-#         cols=3,
-#         spacing="lg",
-#         children=[
-#             dcc.Graph(id="bar-chart"),
-#             dcc.Graph(id="liaph"),
-#             dcc.Graph(id="pie-chart"),
-#         ]
-#     )
-# ])
+        dmc.Space(h=20),
 
-# # Callback to update all graphs
-# @app.callback(
-#     [Output("bar-chart", "figure"),
-#      Output("line-graph", "figure"),
-#      Output("pie-chart", "figure")],
-#     [Input("year-select", "value")]
-# )
-# def update_graphs(selected_year):
-#     if selected_year:
-#         student = StudentData.objects.filter(year=selected_year).first()
-#         if student:
-#             # Data for graphs
-#             branches = ["Mech", "Civil", "EE", "CSE"]
-#             values = [int(student.mech), int(student.civil), int(student.ee), int(student.cse)]
+        dcc.Graph(
+            id="bubble-chart",
+            figure=px.scatter(
+                df, x="sepal_width", y="sepal_length", size="petal_length", color="species",
+                title="Bubble Chart: Sepal Dimensions with Petal Length"
+            )
+        ),
 
-#             # Bar Chart
-#             bar_chart = px.bar(
-#                 x=branches,
-#                 y=values,
-#                 labels={"x": "Branch", "y": "Number of Students"},
-#                 title=f"Bar Chart - Admissions for {selected_year}"
-#             )
+        dmc.Space(h=20),
 
-#             # Line Graph
-#             line_graph = px.line(
-#                 x=branches,
-#                 y=values,
-#                 labels={"x": "Branch", "y": "Number of Students"},
-#                 title=f"Line Graph - Admissions for {selected_year}"
-#             )
+        dcc.Graph(
+            id="line-plot",
+            figure=px.line(
+                df_geo[df_geo['country'] == 'India'], x="year", y="lifeExp",
+                title="Line Plot: Life Expectancy in India Over Time"
+            )
+        ),
 
-#             # Pie Chart
-#             pie_chart = px.pie(
-#                 values=values,
-#                 names=branches,
-#                 title=f"Pie Chart - Admissions Distribution for {selected_year}",
-#                 labels={"values": "Number of Students"}
-#             )
+        dmc.Space(h=20),
 
-#             return bar_chart, line_graph, pie_chart
+        dcc.Graph(
+            id="bar-plot",
+            figure=px.bar(
+                df_bar, x="day", y="total_bill", color="sex", barmode="group",
+                title="Bar Chart: Total Bill by Day and Gender"
+            )
+        ),
 
-#     # Return empty charts if no year is selected
-#     empty_chart = px.bar(title="Select a year to view data")
-#     return empty_chart, empty_chart, empty_chart
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="pie-chart",
+            figure=px.pie(
+                df, names="species", title="Pie Chart: Distribution of Iris Species"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="box-plot",
+            figure=px.box(
+                df, x="species", y="petal_length", color="species",
+                title="Box Plot: Petal Length Distribution by Species"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="violin-plot",
+            figure=px.violin(
+                df, x="species", y="sepal_width", color="species",
+                title="Violin Plot: Sepal Width Distribution by Species"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="strip-plot",
+            figure=px.strip(
+                df, x="species", y="sepal_length", color="species",
+                title="Strip Plot: Sepal Length by Species"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="density-heatmap",
+            figure=px.density_heatmap(
+                df_bar, x="total_bill", y="tip", title="Density Heatmap: Total Bill vs Tip"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="density-contour",
+            figure=px.density_contour(
+                df, x="sepal_width", y="sepal_length", color="species",
+                title="Density Contour: Sepal Dimensions"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="sunburst",
+            figure=px.sunburst(
+                df_geo, path=["continent", "country"], values="pop",
+                title="Sunburst Chart: Population by Continent and Country"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="treemap",
+            figure=px.treemap(
+                df_geo, path=["continent", "country"], values="gdpPercap",
+                title="Treemap: GDP per Capita by Continent and Country"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="scatter-matrix",
+            figure=px.scatter_matrix(
+                df, dimensions=["sepal_width", "sepal_length", "petal_length", "petal_width"], color="species",
+                title="Scatter Matrix: Iris Dataset"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="parallel-coordinates",
+            figure=px.parallel_coordinates(
+                df, dimensions=["sepal_width", "sepal_length", "petal_length", "petal_width"], color="species_id",
+                title="Parallel Coordinates: Iris Dataset"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="parallel-categories",
+            figure=px.parallel_categories(
+                df_bar, dimensions=["sex", "day", "time"], color="total_bill",
+                title="Parallel Categories: Tips Dataset"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="area-chart",
+            figure=px.area(
+                df_geo[df_geo['continent'] == 'Asia'], x="year", y="pop", color="country",
+                title="Area Chart: Population of Asian Countries Over Time"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="funnel-chart",
+            figure=px.funnel(
+                df_funnel, x="stage", y="count",
+                title="Funnel Chart: Marketing Stages"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="funnel-area-chart",
+            figure=px.funnel_area(
+                df_funnel, values="count", names="stage",
+                title="Funnel Area Chart: Marketing Stages"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="scatter-geo",
+            figure=px.scatter_geo(
+                df_geo, locations="iso_alpha", color="continent", size="pop", projection="natural earth",
+                title="Scatter Geo: Population by Country"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="choropleth-map",
+            figure=px.choropleth(
+                df_geo, locations="iso_alpha", color="lifeExp", hover_name="country",
+                title="Choropleth Map: Life Expectancy by Country"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="scatter-3d",
+            figure=px.scatter_3d(
+                df, x="sepal_width", y="sepal_length", z="petal_length", color="species",
+                title="3D Scatter Plot: Sepal and Petal Dimensions"
+            )
+        ),
+
+        dmc.Space(h=20),
+
+        dcc.Graph(
+            id="line-3d",
+            figure=px.line_3d(
+                df_geo[df_geo['country'] == 'India'], x="year", y="pop", z="gdpPercap",
+                title="3D Line Plot: India's Population and GDP Over Time"
+            )
+        ),
+
+    ])
+)
+
+# Run the app
+if __name__ == "__main__":
+    app.run_server(debug=True)

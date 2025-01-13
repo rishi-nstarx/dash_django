@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import DashView, StudentProfile, AttendenecView, dash_home, graph_explained, attendence_graph
+from .views import DashView, StudentProfile, AttendenecView, dash_home, graph_explained, attendence_graph, live_graph
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -9,5 +9,6 @@ urlpatterns = [
     path('graph_explained/', graph_explained, name='graph_explained'),
     path('attendence_update/', AttendenecView.as_view(), name='attendence_update'),
     path('attendence_graph/', attendence_graph, name='attendence_graph'),
+    path('live_graph/', live_graph, name='live_app')
     # path('try/', try_function, name='try')
 ]

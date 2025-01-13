@@ -11,5 +11,6 @@ class DashAppConfig(AppConfig):
             import dash_app.dash_apps.admission
             import dash_app.dash_apps.admission_explained
             import dash_app.dash_apps.attendence_graph
+            import dash_app.dash_apps.live_users
         except Exception as e:
             logging.error(f"Error loading Dash apps: {e}")

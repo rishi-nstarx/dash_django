@@ -11,21 +11,24 @@ class CustomUserAdmin(BaseUserAdmin):
 
     list_display = ('email', 'is_staff', 'is_superuser', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active')
+
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'is_active')}),
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2'),
         }),
     )
+
     search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()  # Empty tuple since we don't have 'groups' or 'user_permissions'
 
+
 # Unregister the Group model if you don't use it with CustomUser
 admin.site.unregister(Group)
-
 admin.site.register(CustomUser, CustomUserAdmin)

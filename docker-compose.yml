@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: ./auth_project  # Ensure this path is correct relative to docker-compose.yml
+      dockerfile: Dockerfile  # Specify Dockerfile if named differently
+    working_dir: /usr/src/app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./auth_project:/usr/src/app  # Only map the project directory
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: "true"
+      EMAIL_HOST_USER: rishiamzn22@gmail.com
+      EMAIL_HOST_PASSWORD: krwttvntpszkiyic
+      MYSQL_DATABASE: Dash_Integration
+      MYSQL_USER: rishi
+      MYSQL_PASSWORD: mauFJcuf5dhRMQrjj
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+
+  db:
+    image: mysql:latest
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: Dash_Integration
+      MYSQL_USER: rishi
+      MYSQL_PASSWORD: mauFJcuf5dhRMQrjj
+      MYSQL_ROOT_PASSWORD: mauFJcuf5dhRMQrjj
+    ports:
+      - "3307:3306"  # Expose MySQL on host port 3307
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  mysql_data:

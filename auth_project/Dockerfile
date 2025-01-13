@@ -1,17 +1,29 @@
-# Use the official Python image from the DockerHub
-FROM python:3.10-slim
+# Use official Python image as a parent image
+FROM python:3.9-slim
 
-# Set the working directory in docker
-WORKDIR /app
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Copy the dependencies file to the working directory
-COPY requirements.txt .
+# Set work directory
+WORKDIR /usr/src/app
 
-# Install any dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    default-libmysqlclient-dev \
+    pkg-config \
+    && apt-get clean
+    
+    
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
 
-# Copy the content of the local src directory to the working directory
-COPY . .
+# Copy project
+COPY . /usr/src/app/
 
-# Specify the command to run on container start
+# Expose port 8000 for Django
+EXPOSE 8000
+# Start the Django development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
